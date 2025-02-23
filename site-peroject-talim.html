@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>O'quv Markazi - Admin Panel</title>
+  <style>
+    /* ======== GLOBAL ======== */
+    * {
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    a{
+        text-decoration: none;
+    }
+    body {
+      background-color: #f2f2f2;
+      color: #2c3e50;
+      display: flex;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+    }
+
+    /* ======== SIDEBAR ======== */
+    .sidebar {
+      width: 250px;
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 20px;
+      transition: background-color 0.3s;
+    }
+    .dark-mode .sidebar {
+      background-color: #333;
+    }
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    .sidebar ul {
+      list-style: none;
+    }
+    .sidebar ul li {
+      margin-bottom: 10px;
+    }
+    .sidebar ul li a {
+      display: block;
+      padding: 10px;
+      background-color: #34495e;
+      border-radius: 5px;
+      transition: 0.3s;
+      color: #fff;
+    }
+    .sidebar ul li a:hover {
+      background-color: #1abc9c;
+    }
+    .dark-mode .sidebar ul li a {
+      background-color: #444;
+    }
+    .dark-mode .sidebar ul li a:hover {
+      background-color: #555;
+    }
+
+    /* ======== MAIN CONTENT ======== */
+    .content {
+      flex: 1;
+      padding: 20px 30px;
+      transition: background-color 0.3s;
+    }
+    .dark-mode .content {
+      background-color: #1e1e1e;
+    }
+
+    /* ======== HEADER (LANG & DARK) ======== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 24px;
+    }
+    .lang-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dark-toggle-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      padding: 2px;
+    }
+    .dark-toggle-btn svg {
+      width: 100%;
+      height: 100%;
+      fill: #fff;
+      transition: fill 0.3s;
+    }
+    .dark-toggle-btn:hover svg {
+      fill: #1abc9c;
+    }
+    .dark-mode .dark-toggle-btn svg {
+      fill: #f1f1f1;
+    }
+
+    /* ======== FORM & TABLE STYLES ======== */
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+    .dark-mode input,
+    .dark-mode select {
+      background-color: #444;
+      color: #fff;
+      border-color: #666;
+    }
+    button {
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 5px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background-color: #fff;
+      border-radius: 5px;
+      overflow: hidden;
+      color: #2c3e50;
+    }
+    thead {
+      background-color: #34495e;
+      color: #fff;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .dark-mode tr:nth-child(even) {
+      background-color: #3c3c3c;
+    }
+    .delete-btn {
+      background-color: #c0392b;
+      border: none;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #e74c3c;
+    }
+
+    /* ======== TEST SECTION STYLES ======== */
+    .toggle-test-btn {
+      background: #2ecc71;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 20px 0;
+      display: inline-block;
+    }
+    .toggle-test-btn:hover {
+      background: #27ae60;
+    }
+    .form-container {
+      background: #fff;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto 20px auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .student-info {
+      font-style: italic;
+      color: #555;
+      margin: 5px 0;
+    }
+    .table-group {
+      margin-bottom: 30px;
+    }
+    .table-group h2 {
+      background: #34495e;
+      color: #fff;
+      padding: 10px;
+      margin-bottom: 0;
+      border-radius: 5px 5px 0 0;
+    }
+
+    /* ======== RESPONSIVE ======== */
+    @media (max-width: 768px) {
+      .content {
+        padding: 15px;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2 data-lang="sidebarTitle">O'quv Markazi</h2>
+    <ul>
+      <li><a href="#" onclick="showSection('dashboard')" data-lang="menuDashboard">Dashboard</a></li>
+      <li><a href="#" onclick="showSection('students')" data-lang="menuStudents">O‘quvchilar</a></li>
+      <li><a href="#" onclick="showSection('payments')" data-lang="menuPayments">To‘lovlar</a></li>
+      <li><a href="#" onclick="showSection('attendance')" data-lang="menuAttendance">Davomat</a></li>
+      <li><a href="#" onclick="showSection('tests')" data-lang="menuTests">Test Sinovi</a></li>
+    </ul>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    <div class="header">
+      <h1 data-lang="dashboardTitle">Xush kelibsiz, Admin!</h1>
+      <div class="lang-container">
+        <select id="langSelect" onchange="changeLanguage()">
+          <option value="uz">O'zbek</option>
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+        </select>
+        <button class="dark-toggle-btn" onclick="toggleDarkMode()" title="Dark Mode">
+          <svg viewBox="0 0 24 24">
+            <path d="M21.752 15.002A9 9 0 0 1 12 3v0a9 9 0 0 0 0 18 9 9 0 0 0 9.752-5.998z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <p data-lang="dashboardText">Bu yerda o‘quv markazingizni boshqarishingiz mumkin.</p>
+
+    <!-- DASHBOARD SECTION -->
+    <!-- <section id="dashboard" style="margin-top:20px;">
+      <h2>Dashboard</h2>
+      <p>Boshqaruv markaziga xush kelibsiz!</p>
+    </section> -->
+
+    <!-- STUDENTS SECTION -->
+    <section id="students" style="display: none; margin-top:20px;">
+      <h2 data-lang="studentsTitle">O‘quvchi qo‘shish</h2>
+      <input type="text" id="studentName" placeholder="Ism">
+      <input type="text" id="studentSurname" placeholder="Familiya">
+      <input type="text" id="studentPhone" placeholder="Telefon raqami">
+      <label data-lang="studentsDateLabel">Kelgan sana:</label>
+      <input type="date" id="studentDate">
+      <button onclick="addStudent()" data-lang="studentsAddBtn">Qo‘shish</button>
+
+      <h3 data-lang="searchTitle">Qidiruv</h3>
+      <input type="text" id="studentSearch" placeholder="Ism Familiya yoki ID" oninput="searchStudent()">
+      <div id="searchResult" style="margin-top:5px; color:#888;"></div>
+
+      <h2 data-lang="studentsListTitle">O‘quvchilar ro‘yxati</h2>
+      <table>
+        <thead>
+          <tr>
+            <th data-lang="thName">Ism</th>
+            <th data-lang="thSurname">Familiya</th>
+            <th data-lang="thPhone">Telefon</th>
+            <th data-lang="thDate">Kelgan sana</th>
+            <th data-lang="thID">ID</th>
+            <th data-lang="thDelete">O‘chirish</th>
+          </tr>
+        </thead>
+        <tbody id="studentList"></tbody>
+      </table>
+    </section>
+
+    <!-- PAYMENTS SECTION -->
+    <section id="payments" style="display: none; margin-top:20px;">
+      <h2 data-lang="paymentsTitle">To‘lov qo‘shish</h2>
+      <input type="text" id="paymentId" placeholder="O‘quvchi ID" oninput="findPaymentStudent()">
+      <p id="paymentStudentInfo" style="margin-top:5px; color:#888;"></p>
+      <input type="number" id="amount" placeholder="Summasi">
+      <input type="text" id="month" placeholder="Oy">
+      <input type="text" id="course" placeholder="Kurs">
+      <button onclick="savePayment()" data-lang="paymentsSaveBtn">Saqlash</button>
+
+      <h2 data-lang="paymentsListTitle">To‘lovlar tarixi</h2>
+      <table>
+        <thead>
+          <tr>
+            <th data-lang="thPayID">To‘lov ID</th>
+            <th data-lang="thStudID">O‘quvchi ID</th>
+            <th>Ism Familiya</th>
+            <th data-lang="thAmount">Summasi</th>
+            <th data-lang="thMonth">Oy</th>
+            <th data-lang="thCourse">Kurs</th>
+            <th data-lang="thDelete">O‘chirish</th>
+          </tr>
+        </thead>
+        <tbody id="paymentList"></tbody>
+      </table>
+    </section>
+
+    <!-- ATTENDANCE SECTION -->
+    <section id="attendance" style="display: none; margin-top:20px;">
+      <h2 data-lang="attendanceTitle">Davomat</h2>
+      <input type="text" id="attendanceStudentId" placeholder="O‘quvchi ID" oninput="findAttendanceStudent()">
+      <p id="attendanceStudentInfo" style="margin-top:5px; color:#888;"></p>
+      <label data-lang="attendanceDateLabel">Kelgan sana:</label>
+      <input type="date" id="attendanceDate">
+      <label data-lang="attendanceStatusLabel">Holati:</label>
+      <select id="attendanceStatus">
+        <option value="present" data-lang="optPresent">Kelgan</option>
+        <option value="absent" data-lang="optAbsent">Kelmagan</option>
+      </select>
+      <button onclick="saveAttendance()" data-lang="attendanceSaveBtn">Saqlash</button>
+
+      <h2 data-lang="attendanceListTitle">Davomat ro‘yxati</h2>
+      <table>
+        <thead>
+          <tr>
+            <th data-lang="thAttID">Davomat ID</th>
+            <th data-lang="thStudID">O‘quvchi ID</th>
+            <th>Ism Familiya</th>
+            <th data-lang="thDate">Kelgan sana</th>
+            <th data-lang="thStatus">Holati</th>
+            <th data-lang="thDelete">O‘chirish</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceList"></tbody>
+      </table>
+    </section>
+
+    <!-- TESTS SECTION -->
+    <section id="tests" style="display: none; margin-top:20px;">
+      <h2 data-lang="testsTitle">Test Sinovi</h2>
+      <button class="toggle-test-btn" onclick="toggleTestForm()">Guruh uchun test ochish</button>
+      
+      <!-- Test form: initially hidden -->
+      <div class="form-container" id="testForm" style="display: none;">
+        <input type="text" id="groupName" placeholder="Guruh nomi (masalan, Django)">
+        <input type="text" id="testStudentId" placeholder="O‘quvchi ID" oninput="findTestStudent()">
+        <p id="testStudentInfo" style="margin-top:5px; color:#888;"></p>
+        <input type="text" id="testMonth" placeholder="Test uchun oy (masalan, Yanvar)">
+        <input type="number" id="testScore" placeholder="Test ballari">
+        <button onclick="addTest()" data-lang="testsAddBtn">Saqlash</button>
+      </div>
+
+      <div id="testsContainer"></div>
+    </section>
+  </div>
+
+  <script>
+    /* === 1) LANGUAGES: UZ, EN, RU === */
+    const languages = {
+      uz: {
+        sidebarTitle: "O'quv Markazi",
+        menuDashboard: "Dashboard",
+        menuStudents: "O‘quvchilar",
+        menuPayments: "To‘lovlar",
+        menuAttendance: "Davomat",
+        menuTests: "Test Sinovi",
+
+        dashboardTitle: "Xush kelibsiz, Admin!",
+        dashboardText: "Bu yerda o‘quv markazingizni boshqarishingiz mumkin.",
+
+        studentsTitle: "O‘quvchi qo‘shish",
+        studentsDateLabel: "Kelgan sana:",
+        studentsAddBtn: "Qo‘shish",
+        searchTitle: "Qidiruv",
+        studentsListTitle: "O‘quvchilar ro‘yxati",
+
+        thName: "Ism",
+        thSurname: "Familiya",
+        thPhone: "Telefon",
+        thDate: "Kelgan sana",
+        thID: "ID",
+        thDelete: "O‘chirish",
+
+        paymentsTitle: "To‘lov qo‘shish",
+        paymentsSaveBtn: "Saqlash",
+        paymentsListTitle: "To‘lovlar tarixi",
+        thPayID: "To‘lov ID",
+        thStudID: "O‘quvchi ID",
+        thAmount: "Summasi",
+        thMonth: "Oy",
+        thCourse: "Kurs",
+
+        attendanceTitle: "Davomat",
+        attendanceDateLabel: "Kelgan sana:",
+        attendanceStatusLabel: "Holati:",
+        attendanceSaveBtn: "Saqlash",
+        attendanceListTitle: "Davomat ro‘yxati",
+        thAttID: "Davomat ID",
+        thStatus: "Holati",
+        optPresent: "Kelgan",
+        optAbsent: "Kelmagan",
+
+        testsTitle: "Test Sinovi",
+        testsAddBtn: "Saqlash",
+        testsListTitle: "Test natijalari",
+      },
+      en: {
+        sidebarTitle: "Learning Center",
+        menuDashboard: "Dashboard",
+        menuStudents: "Students",
+        menuPayments: "Payments",
+        menuAttendance: "Attendance",
+        menuTests: "Test",
+
+        dashboardTitle: "Welcome, Admin!",
+        dashboardText: "Here you can manage your learning center.",
+
+        studentsTitle: "Add Student",
+        studentsDateLabel: "Join date:",
+        studentsAddBtn: "Add",
+        searchTitle: "Search",
+        studentsListTitle: "Student List",
+
+        thName: "Name",
+        thSurname: "Surname",
+        thPhone: "Phone",
+        thDate: "Date",
+        thID: "ID",
+        thDelete: "Delete",
+
+        paymentsTitle: "Add Payment",
+        paymentsSaveBtn: "Save",
+        paymentsListTitle: "Payment History",
+        thPayID: "Payment ID",
+        thStudID: "Student ID",
+        thAmount: "Amount",
+        thMonth: "Month",
+        thCourse: "Course",
+
+        attendanceTitle: "Attendance",
+        attendanceDateLabel: "Date:",
+        attendanceStatusLabel: "Status:",
+        attendanceSaveBtn: "Save",
+        attendanceListTitle: "Attendance List",
+        thAttID: "Attendance ID",
+        thStatus: "Status",
+        optPresent: "Present",
+        optAbsent: "Absent",
+
+        testsTitle: "Tests",
+        testsAddBtn: "Save",
+        testsListTitle: "Test Results",
+      },
+      ru: {
+        sidebarTitle: "Учебный Центр",
+        menuDashboard: "Панель",
+        menuStudents: "Ученики",
+        menuPayments: "Платежи",
+        menuAttendance: "Посещаемость",
+        menuTests: "Тесты",
+
+        dashboardTitle: "Добро пожаловать, Админ!",
+        dashboardText: "Здесь вы можете управлять учебным центром.",
+
+        studentsTitle: "Добавить ученика",
+        studentsDateLabel: "Дата поступления:",
+        studentsAddBtn: "Добавить",
+        searchTitle: "Поиск",
+        studentsListTitle: "Список учеников",
+
+        thName: "Имя",
+        thSurname: "Фамилия",
+        thPhone: "Телефон",
+        thDate: "Дата",
+        thID: "ID",
+        thDelete: "Удалить",
+
+        paymentsTitle: "Добавить платеж",
+        paymentsSaveBtn: "Сохранить",
+        paymentsListTitle: "История платежей",
+        thPayID: "ID платежа",
+        thStudID: "ID ученика",
+        thAmount: "Сумма",
+        thMonth: "Месяц",
+        thCourse: "Курс",
+
+        attendanceTitle: "Посещаемость",
+        attendanceDateLabel: "Дата:",
+        attendanceStatusLabel: "Статус:",
+        attendanceSaveBtn: "Сохранить",
+        attendanceListTitle: "Список посещаемости",
+        thAttID: "ID посещаемости",
+        thStatus: "Статус",
+        optPresent: "Пришел",
+        optAbsent: "Не пришел",
+
+        testsTitle: "Тесты",
+        testsAddBtn: "Сохранить",
+        testsListTitle: "Результаты тестов",
+      }
+    };
+
+    function changeLanguage() {
+      let lang = document.getElementById("langSelect").value;
+      localStorage.setItem("appLang", lang);
+      applyLanguage(lang);
+    }
+
+    function applyLanguage(lang) {
+      let elements = document.querySelectorAll("[data-lang]");
+      elements.forEach(el => {
+        let key = el.getAttribute("data-lang");
+        if (languages[lang][key]) {
+          el.textContent = languages[lang][key];
+        }
+      });
+      // Attendance select
+      document.getElementById("attendanceStatus").querySelector("[value='present']").textContent = languages[lang].optPresent;
+      document.getElementById("attendanceStatus").querySelector("[value='absent']").textContent = languages[lang].optAbsent;
+    }
+
+    /* === 2) On load: Load localStorage data + set language === */
+    window.addEventListener("DOMContentLoaded", () => {
+      // Load data from localStorage
+      loadData();
+      // Render all sections
+      renderStudents();
+      renderPayments();
+      renderAttendance();
+      renderTests();
+      // Dark mode check
+      const theme = localStorage.getItem("theme");
+      if (theme === "dark") {
+        document.body.classList.add("dark-mode");
+      }
+      // Language check
+      let savedLang = localStorage.getItem("appLang") || "uz";
+      document.getElementById("langSelect").value = savedLang;
+      applyLanguage(savedLang);
+    });
+
+    /* === 3) Show Section === */
+    function showSection(sectionId) {
+      document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
+      document.getElementById(sectionId).style.display = "block";
+    }
+
+    /* === 4) Dark Mode === */
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
+      localStorage.setItem("theme", mode);
+    }
+
+    /* === 5) Data arrays & counters === */
+    let students = [];
+    let currentStudentId = 0;
+
+    let payments = [];
+    let currentPaymentId = 0;
+
+    let attendance = [];
+    let currentAttendanceId = 0;
+
+    let tests = [];
+    let currentTestId = 0;
+
+    /* === 6) Students === */
+    function addStudent() {
+      let name = document.getElementById("studentName").value.trim();
+      let surname = document.getElementById("studentSurname").value.trim();
+      let phone = document.getElementById("studentPhone").value.trim();
+      let date = document.getElementById("studentDate").value;
+      if (!name || !surname || !phone || !date) {
+        alert("Barcha maydonlarni to‘ldiring!");
+        return;
+      }
+      currentStudentId++;
+      let newStudent = { id: currentStudentId, name, surname, phone, date };
+      students.push(newStudent);
+      document.getElementById("studentName").value = "";
+      document.getElementById("studentSurname").value = "";
+      document.getElementById("studentPhone").value = "";
+      document.getElementById("studentDate").value = "";
+      saveData();
+      renderStudents();
+    }
+    function renderStudents() {
+      let tbody = document.getElementById("studentList");
+      tbody.innerHTML = "";
+      students.forEach(st => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${st.name}</td>
+          <td>${st.surname}</td>
+          <td>${st.phone}</td>
+          <td>${st.date}</td>
+          <td>${st.id}</td>
+          <td><button class="delete-btn" onclick="deleteStudent(${st.id})">O‘chirish</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    function deleteStudent(id) {
+      students = students.filter(s => s.id !== id);
+      saveData();
+      renderStudents();
+    }
+    function searchStudent() {
+      let query = document.getElementById("studentSearch").value.trim().toLowerCase();
+      let resultDiv = document.getElementById("searchResult");
+      if (!query) {
+        resultDiv.textContent = "";
+        return;
+      }
+      if (!isNaN(query)) {
+        let found = students.find(s => s.id == query);
+        resultDiv.textContent = found ? `ID: ${found.id} -> ${found.name} ${found.surname}` : "Topilmadi";
+      } else {
+        let found = students.find(s => (s.name + " " + s.surname).toLowerCase() === query);
+        resultDiv.textContent = found ? `${found.name} ${found.surname} -> ID: ${found.id}` : "Topilmadi";
+      }
+    }
+
+    /* === 7) Payments === */
+    function findPaymentStudent() {
+      let id = document.getElementById("paymentId").value.trim();
+      let info = document.getElementById("paymentStudentInfo");
+      if (!id) {
+        info.textContent = "";
+        return;
+      }
+      let student = students.find(s => s.id == id);
+      if (student) {
+        info.textContent = `O'quvchi: ${student.name} ${student.surname}`;
+      } else {
+        info.textContent = "Bunday ID li o'quvchi topilmadi";
+      }
+    }
+    function savePayment() {
+      let id = document.getElementById("paymentId").value.trim();
+      let amount = document.getElementById("amount").value.trim();
+      let month = document.getElementById("month").value.trim();
+      let course = document.getElementById("course").value.trim();
+      if (!id || !amount || !month || !course) {
+        alert("Barcha maydonlarni to‘ldiring!");
+        return;
+      }
+      let student = students.find(s => s.id == id);
+      if (!student) {
+        alert("Bunday ID li o‘quvchi mavjud emas!");
+        return;
+      }
+      currentPaymentId++;
+      let newPayment = {
+        payId: currentPaymentId,
+        studentId: id,
+        studentName: student.name,
+        studentSurname: student.surname,
+        amount,
+        month,
+        course
+      };
+      payments.push(newPayment);
+      document.getElementById("paymentId").value = "";
+      document.getElementById("amount").value = "";
+      document.getElementById("month").value = "";
+      document.getElementById("course").value = "";
+      document.getElementById("paymentStudentInfo").textContent = "";
+      saveData();
+      renderPayments();
+    }
+    function renderPayments() {
+      let tbody = document.getElementById("paymentList");
+      tbody.innerHTML = "";
+      payments.forEach(pay => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${pay.payId}</td>
+          <td>${pay.studentId}</td>
+          <td>${pay.studentName} ${pay.studentSurname}</td>
+          <td>${pay.amount}</td>
+          <td>${pay.month}</td>
+          <td>${pay.course}</td>
+          <td><button class="delete-btn" onclick="deletePayment(${pay.payId})">O‘chirish</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    function deletePayment(payId) {
+      payments = payments.filter(p => p.payId !== payId);
+      saveData();
+      renderPayments();
+    }
+
+    /* === 8) Attendance === */
+    function findAttendanceStudent() {
+      let id = document.getElementById("attendanceStudentId").value.trim();
+      let info = document.getElementById("attendanceStudentInfo");
+      if (!id) {
+        info.textContent = "";
+        return;
+      }
+      let student = students.find(s => s.id == id);
+      if (student) {
+        info.textContent = `O'quvchi: ${student.name} ${student.surname}`;
+      } else {
+        info.textContent = "Bunday ID li o'quvchi topilmadi";
+      }
+    }
+    function saveAttendance() {
+      let id = document.getElementById("attendanceStudentId").value.trim();
+      let date = document.getElementById("attendanceDate").value;
+      let status = document.getElementById("attendanceStatus").value;
+      if (!id || !date || !status) {
+        alert("Barcha maydonlarni to‘ldiring!");
+        return;
+      }
+      let student = students.find(s => s.id == id);
+      if (!student) {
+        alert("Bunday ID li o‘quvchi mavjud emas!");
+        return;
+      }
+      currentAttendanceId++;
+      let newAtt = {
+        attendanceId: currentAttendanceId,
+        studentId: id,
+        studentName: student.name,
+        studentSurname: student.surname,
+        date,
+        status
+      };
+      attendance.push(newAtt);
+      document.getElementById("attendanceStudentId").value = "";
+      document.getElementById("attendanceDate").value = "";
+      document.getElementById("attendanceStatus").value = "present";
+      document.getElementById("attendanceStudentInfo").textContent = "";
+      saveData();
+      renderAttendance();
+    }
+    function renderAttendance() {
+      let tbody = document.getElementById("attendanceList");
+      tbody.innerHTML = "";
+      attendance.forEach(att => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${att.attendanceId}</td>
+          <td>${att.studentId}</td>
+          <td>${att.studentName} ${att.studentSurname}</td>
+          <td>${att.date}</td>
+          <td>${att.status}</td>
+          <td><button class="delete-btn" onclick="deleteAttendance(${att.attendanceId})">O‘chirish</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    function deleteAttendance(attId) {
+      attendance = attendance.filter(a => a.attendanceId !== attId);
+      saveData();
+      renderAttendance();
+    }
+
+    /* === 9) Tests === */
+    function toggleTestForm() {
+      let form = document.getElementById("testForm");
+      form.style.display = (form.style.display === "none") ? "block" : "none";
+    }
+    function findTestStudent() {
+      let id = document.getElementById("testStudentId").value.trim();
+      let info = document.getElementById("testStudentInfo");
+      if (!id) {
+        info.textContent = "";
+        return;
+      }
+      let student = students.find(s => s.id == id);
+      if (student) {
+        info.textContent = `O'quvchi: ${student.name} ${student.surname}`;
+      } else {
+        info.textContent = "Bunday ID li o'quvchi topilmadi";
+      }
+    }
+    function addTest() {
+      let groupName = document.getElementById("groupName").value.trim();
+      let studentId = document.getElementById("testStudentId").value.trim();
+      let testMonth = document.getElementById("testMonth").value.trim();
+      let testScore = document.getElementById("testScore").value.trim();
+      if (!groupName || !studentId || !testMonth || !testScore) {
+        alert("Barcha maydonlarni to‘ldiring!");
+        return;
+      }
+      let student = students.find(s => s.id == studentId);
+      if (!student) {
+        alert("Bunday ID li o‘quvchi mavjud emas!");
+        return;
+      }
+      currentTestId++;
+      let newTest = {
+        testId: currentTestId,
+        groupName,
+        studentId,
+        studentName: student.name,
+        studentSurname: student.surname,
+        month: testMonth,
+        score: testScore
+      };
+      tests.push(newTest);
+      document.getElementById("groupName").value = "";
+      document.getElementById("testStudentId").value = "";
+      document.getElementById("testMonth").value = "";
+      document.getElementById("testScore").value = "";
+      document.getElementById("testStudentInfo").textContent = "";
+      saveData();
+      renderTests();
+      toggleTestForm();
+    }
+    function renderTests() {
+      let container = document.getElementById("testsContainer");
+      container.innerHTML = "";
+      let groups = {};
+      tests.forEach(t => {
+        if (!groups[t.groupName]) groups[t.groupName] = [];
+        groups[t.groupName].push(t);
+      });
+      for (let group in groups) {
+        let groupDiv = document.createElement("div");
+        groupDiv.className = "table-group";
+        let header = document.createElement("h2");
+        header.textContent = group + " Guruh Natijalari";
+        groupDiv.appendChild(header);
+
+        let table = document.createElement("table");
+        let thead = document.createElement("thead");
+        thead.innerHTML = `
+          <tr>
+            <th>Test ID</th>
+            <th>O‘quvchi ID</th>
+            <th>Ism Familiya</th>
+            <th>Oy</th>
+            <th>Ball</th>
+            <th>O‘chirish</th>
+          </tr>
+        `;
+        table.appendChild(thead);
+
+        let tbody = document.createElement("tbody");
+        groups[group].forEach(test => {
+          let tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${test.testId}</td>
+            <td>${test.studentId}</td>
+            <td>${test.studentName} ${test.studentSurname}</td>
+            <td>${test.month}</td>
+            <td>${test.score}</td>
+            <td><button class="delete-btn" onclick="deleteTest(${test.testId})">O‘chirish</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        groupDiv.appendChild(table);
+        container.appendChild(groupDiv);
+      }
+    }
+    function deleteTest(testId) {
+      tests = tests.filter(t => t.testId !== testId);
+      saveData();
+      renderTests();
+    }
+
+    /* === 10) Save & Load Data (LocalStorage) === */
+    function saveData() {
+      localStorage.setItem("students", JSON.stringify(students));
+      localStorage.setItem("currentStudentId", currentStudentId);
+
+      localStorage.setItem("payments", JSON.stringify(payments));
+      localStorage.setItem("currentPaymentId", currentPaymentId);
+
+      localStorage.setItem("attendance", JSON.stringify(attendance));
+      localStorage.setItem("currentAttendanceId", currentAttendanceId);
+
+      localStorage.setItem("tests", JSON.stringify(tests));
+      localStorage.setItem("currentTestId", currentTestId);
+    }
+    function loadData() {
+      let s = localStorage.getItem("students");
+      let sid = localStorage.getItem("currentStudentId");
+      let p = localStorage.getItem("payments");
+      let pid = localStorage.getItem("currentPaymentId");
+      let a = localStorage.getItem("attendance");
+      let aid = localStorage.getItem("currentAttendanceId");
+      let t = localStorage.getItem("tests");
+      let tid = localStorage.getItem("currentTestId");
+
+      if (s) students = JSON.parse(s);
+      if (sid) currentStudentId = parseInt(sid);
+
+      if (p) payments = JSON.parse(p);
+      if (pid) currentPaymentId = parseInt(pid);
+
+      if (a) attendance = JSON.parse(a);
+      if (aid) currentAttendanceId = parseInt(aid);
+
+      if (t) tests = JSON.parse(t);
+      if (tid) currentTestId = parseInt(tid);
+    }
+  </script>
+</body>
+</html>
